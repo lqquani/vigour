@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<project name="rwa" default="make-war" basedir=".."> 
+	<!-- property -->
+	<property name="target" 		value="1.6"/>
+	<property name="source" 		value="1.6"/>
+	<property name="dir.src" 		value="${basedir}/src"/>
+	<property name="dir.web" 		value="${basedir}/WebContent"/>
+	<property name="dir.lib" 		value="${dir.web}/WEB-INF/lib"/>
+	<property name="dir.classes" 	value="${dir.web}/WEB-INF/classes"/>
+	
+	<!-- 配置文件【所有配置文件必须按相应的目录结构存放到build/CONFIG目录下】 -->
+	<property name="build.config.dir" 	value="${basedir}/build/CONFIG"/>
+	
+	<!-- 构建文件存放目录 -->
+	<property name="deploy.home" 		value="../DEPLOY"/>
+	<property name="deploy.war.name" 	value="${deploy.home}/${ant.project.name}.war"/>
+	
+	<!-- 构建路径 -->	
+	<path id="compile.classpath">
+		<fileset dir="${dir.lib}" includes="**/*.jar" />
+	</path>
+	
+	<!-- 初始化 -->
+	<target name="init">
+		<!-- 【首先替换配置文件】 -->
+		<copy todir="${basedir}" overwrite="true" preservelastmodified="true">
+			<fileset dir="${build.config.dir}" includes="**/**" />
+		</copy>
+		<!-- mk&clean -->
+		<mkdir dir="${deploy.home}"/>
+		<delete dir="${dir.classes}"/>
+		<mkdir dir="${dir.classes}"/>
+	</target>
+	
+	<!-- 编译 -->
+	<target name="compile" depends="init">
+		<javac destdir="${dir.classes}" source="${source}" target="${target}" encoding="UTF-8">
+			<src path="${dir.src}"/>
+			<classpath refid="compile.classpath"/>
+		</javac>
+		<!-- 非java文件处理 -->
+		<copy todir="${dir.classes}" includeemptydirs="false" preservelastmodified="true">
+			<fileset dir="${dir.src}" excludes="**/*.java" />
+		</copy>
+	</target>
+	
+	<!-- 导出war包 -->
+	<target name="make-war" depends="compile">
+		<war destfile="${deploy.war.name}" webxml="${dir.web}/WEB-INF/web.xml">
+			<fileset dir="${dir.web}" includes="**/**"/>
+		</war>
+   </target>
+
+</project>

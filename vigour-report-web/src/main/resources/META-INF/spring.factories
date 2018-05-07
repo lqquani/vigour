@@ -1,0 +1,1 @@
+org.springframework.context.ApplicationContextInitializer=org.qql.vigour.web.config.DatabaseApplicationContext
